@@ -1,20 +1,21 @@
 [build]
   publish = "build/web"
   command = """
-    # Install Flutter
-    if [ ! -d "/opt/flutter" ]; then
-      echo "Installing Flutter..."
-      cd /opt
+    # Install Flutter in home directory (we have write permissions there)
+    FLUTTER_HOME="$HOME/flutter"
+    if [ ! -d "$FLUTTER_HOME" ]; then
+      echo "Installing Flutter to $FLUTTER_HOME..."
+      cd $HOME
       curl -o flutter_linux_3.16.0-stable.tar.xz https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.16.0-stable.tar.xz
       tar xf flutter_linux_3.16.0-stable.tar.xz
       rm flutter_linux_3.16.0-stable.tar.xz
     fi
     
     # Add Flutter to PATH
-    export PATH="/opt/flutter/bin:$PATH"
+    export PATH="$FLUTTER_HOME/bin:$PATH"
     
     # Verify Flutter installation
-    flutter doctor
+    flutter doctor --machine
     
     # Enable web support and build
     flutter config --enable-web
