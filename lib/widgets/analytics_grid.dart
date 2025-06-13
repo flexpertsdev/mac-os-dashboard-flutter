@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/dashboard_data.dart';
 import '../utils/responsive_helper.dart';
+import '../utils/responsive_theme.dart';
 import 'metric_card.dart';
 import 'chart_card.dart';
 
@@ -76,13 +77,13 @@ class _AnalyticsGridState extends State<AnalyticsGrid>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSectionHeader(context, 'Key Metrics', Icons.trending_up),
-            const SizedBox(height: 16),
+            SizedBox(height: ResponsiveHelper.getAccessibleSpacing(context, 16)),
             _buildMetricsGrid(context, spacing),
-            const SizedBox(height: 32),
+            SizedBox(height: ResponsiveHelper.getAccessibleSpacing(context, 32)),
             _buildSectionHeader(context, 'Analytics', Icons.analytics),
-            const SizedBox(height: 16),
+            SizedBox(height: ResponsiveHelper.getAccessibleSpacing(context, 16)),
             _buildChartsGrid(context, spacing),
-            const SizedBox(height: 24),
+            SizedBox(height: ResponsiveHelper.getAccessibleSpacing(context, 24)),
           ],
         ),
       ),
@@ -95,23 +96,28 @@ class _AnalyticsGridState extends State<AnalyticsGrid>
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: EdgeInsets.all(ResponsiveHelper.getResponsiveWidth(context, 8)),
           decoration: BoxDecoration(
             color: theme.colorScheme.primary.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(ResponsiveHelper.getResponsiveWidth(context, 8)),
           ),
           child: Icon(
             icon,
             color: theme.colorScheme.primary,
-            size: 20,
+            size: ResponsiveHelper.getIconSize(context, baseSize: 20),
           ),
         ),
-        const SizedBox(width: 12),
-        Text(
-          title,
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: theme.colorScheme.onSurface,
-            fontWeight: FontWeight.w600,
+        SizedBox(width: ResponsiveHelper.getAccessibleSpacing(context, 12)),
+        Flexible(
+          child: Text(
+            title,
+            style: ResponsiveTheme.responsiveTextStyle(
+              context,
+              baseFontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: theme.colorScheme.onSurface,
+            ),
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],
@@ -161,7 +167,7 @@ class _AnalyticsGridState extends State<AnalyticsGrid>
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: columns,
-        childAspectRatio: 1.5,
+        childAspectRatio: ResponsiveHelper.getCardAspectRatio(context),
         crossAxisSpacing: spacing,
         mainAxisSpacing: spacing,
       ),
@@ -230,7 +236,7 @@ class _AnalyticsGridState extends State<AnalyticsGrid>
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 1.2,
+        childAspectRatio: ResponsiveHelper.getCardAspectRatio(context),
         crossAxisSpacing: spacing,
         mainAxisSpacing: spacing,
       ),
@@ -336,7 +342,7 @@ class _AnalyticsGridState extends State<AnalyticsGrid>
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: columns,
-        childAspectRatio: 1.5,
+        childAspectRatio: ResponsiveHelper.getCardAspectRatio(context),
         crossAxisSpacing: spacing,
         mainAxisSpacing: spacing,
       ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../models/dashboard_data.dart';
+import '../utils/responsive_helper.dart';
+import '../utils/responsive_theme.dart';
 
 class ChartCard extends StatefulWidget {
   final ChartCardData data;
@@ -68,10 +70,11 @@ class _ChartCardState extends State<ChartCard>
             onExit: (_) => _onHover(false),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              height: 320,
+              height: ResponsiveHelper.getResponsiveHeight(context, 320),
+              constraints: ResponsiveHelper.getCardConstraints(context),
               decoration: BoxDecoration(
                 color: theme.colorScheme.surface,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(ResponsiveHelper.getResponsiveWidth(context, 12)),
                 border: Border.all(
                   color: _isHovered
                       ? theme.colorScheme.outline.withOpacity(0.3)
@@ -92,14 +95,14 @@ class _ChartCardState extends State<ChartCard>
                 color: Colors.transparent,
                 child: InkWell(
                   onTap: () => _showFullChart(context),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(ResponsiveHelper.getResponsiveWidth(context, 12)),
                   child: Padding(
-                    padding: const EdgeInsets.all(20),
+                    padding: ResponsiveHelper.getContentPadding(context),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildHeader(context, theme),
-                        const SizedBox(height: 20),
+                        SizedBox(height: ResponsiveHelper.getAccessibleSpacing(context, 20)),
                         Expanded(
                           child: _buildChart(context, theme),
                         ),
@@ -124,25 +127,35 @@ class _ChartCardState extends State<ChartCard>
             children: [
               Text(
                 widget.data.title,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: theme.colorScheme.onSurface,
+                style: ResponsiveTheme.responsiveTextStyle(
+                  context,
+                  baseFontSize: 16,
                   fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.onSurface,
                 ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
               ),
-              const SizedBox(height: 4),
+              SizedBox(height: ResponsiveHelper.getAccessibleSpacing(context, 4)),
               Text(
                 widget.data.subtitle,
-                style: theme.textTheme.bodySmall?.copyWith(
+                style: ResponsiveTheme.responsiveTextStyle(
+                  context,
+                  baseFontSize: 12,
                   color: theme.colorScheme.onSurface.withOpacity(0.6),
                 ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
             ],
           ),
         ),
-        Icon(
-          Icons.more_horiz,
+        ResponsiveTheme.responsiveIconButton(
+          context: context,
+          onPressed: () => _showMoreOptions(context),
+          icon: Icons.more_horiz,
           color: theme.colorScheme.onSurface.withOpacity(0.4),
-          size: 16,
+          tooltip: 'More options',
         ),
       ],
     );
@@ -406,14 +419,19 @@ class _ChartCardState extends State<ChartCard>
 
   void _showFullChart(BuildContext context) {
     final theme = Theme.of(context);
+    final screenSize = MediaQuery.of(context).size;
     
     showDialog(
       context: context,
       builder: (context) => Dialog(
         child: Container(
-          width: 600,
-          height: 500,
-          padding: const EdgeInsets.all(24),
+          width: ResponsiveHelper.getResponsiveWidth(context, 600),
+          height: ResponsiveHelper.getResponsiveHeight(context, 500),
+          constraints: BoxConstraints(
+            maxWidth: screenSize.width * 0.9,
+            maxHeight: screenSize.height * 0.8,
+          ),
+          padding: ResponsiveHelper.getContentPadding(context),
           child: Column(
             children: [
               Row(
@@ -424,36 +442,85 @@ class _ChartCardState extends State<ChartCard>
                       children: [
                         Text(
                           widget.data.title,
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            color: theme.colorScheme.onSurface,
+                          style: ResponsiveTheme.responsiveTextStyle(
+                            context,
+                            baseFontSize: 20,
                             fontWeight: FontWeight.w600,
+                            color: theme.colorScheme.onSurface,
                           ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: ResponsiveHelper.getAccessibleSpacing(context, 4)),
                         Text(
                           widget.data.subtitle,
-                          style: theme.textTheme.bodyMedium?.copyWith(
+                          style: ResponsiveTheme.responsiveTextStyle(
+                            context,
+                            baseFontSize: 14,
                             color: theme.colorScheme.onSurface.withOpacity(0.6),
                           ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                         ),
                       ],
                     ),
                   ),
-                  IconButton(
+                  ResponsiveTheme.responsiveIconButton(
+                    context: context,
                     onPressed: () => Navigator.of(context).pop(),
-                    icon: Icon(
-                      Icons.close,
-                      color: theme.colorScheme.onSurface.withOpacity(0.7),
-                    ),
+                    icon: Icons.close,
+                    color: theme.colorScheme.onSurface.withOpacity(0.7),
+                    tooltip: 'Close',
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: ResponsiveHelper.getAccessibleSpacing(context, 24)),
               Expanded(
-                child: _buildChart(context, theme),
+                child: RepaintBoundary(
+                  child: _buildChart(context, theme),
+                ),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  void _showMoreOptions(BuildContext context) {
+    // Show options menu for chart
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: ResponsiveHelper.getContentPadding(context),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.fullscreen),
+              title: const Text('View Full Chart'),
+              onTap: () {
+                Navigator.of(context).pop();
+                _showFullChart(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.download),
+              title: const Text('Export Chart'),
+              onTap: () {
+                Navigator.of(context).pop();
+                // Implement export functionality
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Chart Settings'),
+              onTap: () {
+                Navigator.of(context).pop();
+                // Implement settings
+              },
+            ),
+          ],
         ),
       ),
     );

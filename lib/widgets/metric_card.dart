@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/dashboard_data.dart';
+import '../utils/responsive_helper.dart';
+import '../utils/responsive_theme.dart';
 
 class MetricCard extends StatefulWidget {
   final MetricCardData data;
@@ -67,9 +69,10 @@ class _MetricCardState extends State<MetricCard>
             onExit: (_) => _onHover(false),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
+              constraints: ResponsiveHelper.getCardConstraints(context),
               decoration: BoxDecoration(
                 color: theme.colorScheme.surface,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(ResponsiveHelper.getResponsiveWidth(context, 12)),
                 border: Border.all(
                   color: _isHovered
                       ? theme.colorScheme.outline.withOpacity(0.3)
@@ -90,18 +93,18 @@ class _MetricCardState extends State<MetricCard>
                 color: Colors.transparent,
                 child: InkWell(
                   onTap: () => _showDetails(context),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(ResponsiveHelper.getResponsiveWidth(context, 12)),
                   child: Padding(
-                    padding: const EdgeInsets.all(20),
+                    padding: ResponsiveHelper.getContentPadding(context),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildHeader(context, theme),
-                        const SizedBox(height: 16),
+                        SizedBox(height: ResponsiveHelper.getAccessibleSpacing(context, 16)),
                         _buildValue(context, theme),
-                        const SizedBox(height: 8),
+                        SizedBox(height: ResponsiveHelper.getAccessibleSpacing(context, 8)),
                         _buildTrend(context, theme),
-                        const SizedBox(height: 12),
+                        SizedBox(height: ResponsiveHelper.getAccessibleSpacing(context, 12)),
                         _buildSubtitle(context, theme),
                       ],
                     ),
@@ -119,32 +122,37 @@ class _MetricCardState extends State<MetricCard>
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: EdgeInsets.all(ResponsiveHelper.getResponsiveWidth(context, 8)),
           decoration: BoxDecoration(
             color: widget.data.color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(ResponsiveHelper.getResponsiveWidth(context, 8)),
           ),
           child: Icon(
             widget.data.icon,
             color: widget.data.color,
-            size: 20,
+            size: ResponsiveHelper.getIconSize(context, baseSize: 20),
           ),
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: ResponsiveHelper.getAccessibleSpacing(context, 12)),
         Expanded(
           child: Text(
             widget.data.title,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.7),
+            style: ResponsiveTheme.responsiveTextStyle(
+              context,
+              baseFontSize: 14,
               fontWeight: FontWeight.w500,
+              color: theme.colorScheme.onSurface.withOpacity(0.7),
             ),
             overflow: TextOverflow.ellipsis,
+            maxLines: 2,
           ),
         ),
-        Icon(
-          Icons.more_horiz,
+        ResponsiveTheme.responsiveIconButton(
+          context: context,
+          onPressed: () => _showMoreOptions(context),
+          icon: Icons.more_horiz,
           color: theme.colorScheme.onSurface.withOpacity(0.4),
-          size: 16,
+          tooltip: 'More options',
         ),
       ],
     );
@@ -153,11 +161,15 @@ class _MetricCardState extends State<MetricCard>
   Widget _buildValue(BuildContext context, ThemeData theme) {
     return Text(
       widget.data.value,
-      style: theme.textTheme.headlineMedium?.copyWith(
-        color: theme.colorScheme.onSurface,
+      style: ResponsiveTheme.responsiveTextStyle(
+        context,
+        baseFontSize: 24,
         fontWeight: FontWeight.w600,
+        color: theme.colorScheme.onSurface,
         height: 1.1,
       ),
+      overflow: TextOverflow.ellipsis,
+      maxLines: 1,
     );
   }
 
@@ -173,10 +185,13 @@ class _MetricCardState extends State<MetricCard>
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          padding: EdgeInsets.symmetric(
+            horizontal: ResponsiveHelper.getResponsiveWidth(context, 6),
+            vertical: ResponsiveHelper.getResponsiveHeight(context, 2),
+          ),
           decoration: BoxDecoration(
             color: trendColor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(ResponsiveHelper.getResponsiveWidth(context, 4)),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -184,24 +199,31 @@ class _MetricCardState extends State<MetricCard>
               Icon(
                 trendIcon,
                 color: trendColor,
-                size: 12,
+                size: ResponsiveHelper.getResponsiveWidth(context, 12),
               ),
-              const SizedBox(width: 2),
+              SizedBox(width: ResponsiveHelper.getAccessibleSpacing(context, 2)),
               Text(
                 trendText,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: trendColor,
+                style: ResponsiveTheme.responsiveTextStyle(
+                  context,
+                  baseFontSize: 10,
                   fontWeight: FontWeight.w500,
+                  color: trendColor,
                 ),
               ),
             ],
           ),
         ),
-        const SizedBox(width: 8),
-        Text(
-          'vs last period',
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurface.withOpacity(0.5),
+        SizedBox(width: ResponsiveHelper.getAccessibleSpacing(context, 8)),
+        Flexible(
+          child: Text(
+            'vs last period',
+            style: ResponsiveTheme.responsiveTextStyle(
+              context,
+              baseFontSize: 12,
+              color: theme.colorScheme.onSurface.withOpacity(0.5),
+            ),
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],
@@ -212,18 +234,23 @@ class _MetricCardState extends State<MetricCard>
     return Row(
       children: [
         Container(
-          width: 4,
-          height: 4,
+          width: ResponsiveHelper.getResponsiveWidth(context, 4),
+          height: ResponsiveHelper.getResponsiveWidth(context, 4),
           decoration: BoxDecoration(
             color: widget.data.color,
             shape: BoxShape.circle,
           ),
         ),
-        const SizedBox(width: 6),
-        Text(
-          widget.data.subtitle,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurface.withOpacity(0.6),
+        SizedBox(width: ResponsiveHelper.getAccessibleSpacing(context, 6)),
+        Flexible(
+          child: Text(
+            widget.data.subtitle,
+            style: ResponsiveTheme.responsiveTextStyle(
+              context,
+              baseFontSize: 12,
+              color: theme.colorScheme.onSurface.withOpacity(0.6),
+            ),
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],
@@ -239,22 +266,27 @@ class _MetricCardState extends State<MetricCard>
         title: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: EdgeInsets.all(ResponsiveHelper.getResponsiveWidth(context, 8)),
               decoration: BoxDecoration(
                 color: widget.data.color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(ResponsiveHelper.getResponsiveWidth(context, 8)),
               ),
               child: Icon(
                 widget.data.icon,
                 color: widget.data.color,
-                size: 20,
+                size: ResponsiveHelper.getIconSize(context, baseSize: 20),
               ),
             ),
-            const SizedBox(width: 12),
-            Text(
-              widget.data.title,
-              style: theme.textTheme.titleLarge?.copyWith(
-                color: theme.colorScheme.onSurface,
+            SizedBox(width: ResponsiveHelper.getAccessibleSpacing(context, 12)),
+            Flexible(
+              child: Text(
+                widget.data.title,
+                style: ResponsiveTheme.responsiveTextStyle(
+                  context,
+                  baseFontSize: 20,
+                  color: theme.colorScheme.onSurface,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
@@ -331,6 +363,45 @@ class _MetricCardState extends State<MetricCard>
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showMoreOptions(BuildContext context) {
+    // Show options menu for metric
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: ResponsiveHelper.getContentPadding(context),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.analytics),
+              title: const Text('View Analytics'),
+              onTap: () {
+                Navigator.of(context).pop();
+                _showDetails(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.share),
+              title: const Text('Share Metric'),
+              onTap: () {
+                Navigator.of(context).pop();
+                // Implement share functionality
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.notifications),
+              title: const Text('Set Alert'),
+              onTap: () {
+                Navigator.of(context).pop();
+                // Implement alert functionality
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
