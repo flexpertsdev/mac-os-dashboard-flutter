@@ -137,6 +137,50 @@ The following AI guides have been imported to support future development:
 3. **Design System**: Implement comprehensive design tokens and patterns
 4. **Supabase Migration**: Prepare for backend integration when needed
 
+## 🔄 DEVELOPMENT WORKFLOW (CRITICAL - APPLY TO ALL PROJECTS)
+
+### **Task Completion & Push Protocol**
+**MANDATORY PROCESS**: After every distinct task or file group completion:
+
+1. **Complete Task** → Edit/create 2-5 related files (one logical change)
+2. **Claude Ping** → "✅ **TASK COMPLETE**: [brief description]. Ready to push commit and resume next task: [next task name]. Confirm to proceed?"
+3. **User Confirmation** → User says "yes" or provides feedback
+4. **Auto-Push** → Claude commits with descriptive message and pushes to GitHub
+5. **Auto-Check** → Trigger GitHub workflow for immediate error detection
+6. **Resume** → Move to next task only after successful push
+
+### **Commit Quality Standards**
+Every commit MUST include:
+- ✅ Descriptive commit message with emojis and "why changed"
+- ✅ Small, focused changes (3-5 files max per commit)
+- ✅ Automatic GitHub Actions trigger for code analysis  
+- ✅ Claude Code attribution footer
+- ✅ Clear indication of what functionality was added/fixed
+
+### **Error Prevention Strategy**
+- **Never accumulate changes** → Push every 3-5 minutes  
+- **Always run analysis** → GitHub Actions on every push
+- **Catch errors early** → Fix immediately, don't continue with broken code
+- **Single responsibility** → One logical change per commit
+- **Immediate feedback** → Check build status before proceeding
+
+### **Example Ping Format**
+```
+✅ **TASK COMPLETE**: Added missing InsightType enum values and UserProfile getters
+Files changed: demo_models.dart, app_models.dart, dashboard_data.dart
+Next task: Fix navigation parameter mismatches in widget files
+Ready to push commit and proceed? Confirm to continue.
+```
+
+### **Automated Quality Checks**
+On every push, automatically trigger:
+- **Flutter Code Analysis** → Catch syntax/type errors
+- **Build Test** → Ensure compilation succeeds  
+- **Lint Check** → Code style and best practices
+- **Import Analysis** → Detect unused/missing imports
+
+---
+
 ## 🛠️ Development Roadmap
 
 ### Phase 1: Critical Fixes (Week 1)

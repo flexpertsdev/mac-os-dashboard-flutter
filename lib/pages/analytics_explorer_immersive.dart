@@ -405,7 +405,7 @@ class _AnalyticsExplorerImmersiveState extends State<AnalyticsExplorerImmersive>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.metricData['title']?.toString() ?? 'Analytics Explorer',
+                        widget.metricData?['title']?.toString() ?? 'Analytics Explorer',
                         style: ResponsiveTheme.responsiveTextStyle(
                           context,
                           baseFontSize: 28,

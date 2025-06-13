@@ -8,6 +8,7 @@ import '../services/demo_session_service.dart';
 import '../models/demo_models.dart';
 import '../pages/analytics_explorer_immersive.dart';
 import '../pages/export_studio_immersive.dart';
+import '../pages/collaboration_studio_immersive.dart';
 
 class ReportViewerImmersive extends StatefulWidget {
   final Map<String, dynamic> reportData;
@@ -46,7 +47,8 @@ class _ReportViewerImmersiveState extends State<ReportViewerImmersive>
   final Map<String, bool> _appliedFilters = {};
   
   // Export options
-  final List<ExportFormat> _exportFormats = [
+  // Export formats are now defined in ExportStudioImmersive
+  List<ExportFormat> get _exportFormats => [
     ExportFormat('PDF', Icons.picture_as_pdf, const Color(0xFFEF4444)),
     ExportFormat('Excel', Icons.table_chart, const Color(0xFF10B981)),
     ExportFormat('PowerPoint', Icons.slideshow, const Color(0xFFF59E0B)),
@@ -1948,13 +1950,6 @@ class ReportComment {
   });
 }
 
-class ExportFormat {
-  final String name;
-  final IconData icon;
-  final Color color;
-
-  ExportFormat(this.name, this.icon, this.color);
-}
 
 // Custom painter for chart preview
 class ChartPreviewPainter extends CustomPainter {
