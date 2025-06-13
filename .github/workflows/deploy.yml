@@ -3,8 +3,8 @@ name: Build and Deploy Flutter Web to Netlify
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    paths:
+      - 'DEPLOY.md'
 
 jobs:
   build-and-deploy:

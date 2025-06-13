@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/dashboard_data.dart';
+import '../models/demo_models.dart';
 import '../services/dashboard_service.dart';
+import '../services/demo_session_service.dart';
 import '../widgets/sidebar_navigation.dart';
 import '../widgets/top_navigation.dart';
 import '../widgets/analytics_grid.dart';
+import '../widgets/executive_dashboard_header.dart';
+import '../widgets/kpi_theater_card.dart';
+import '../widgets/ai_insight_engine.dart';
+import '../widgets/market_opportunity_visualizer.dart';
+import '../widgets/revenue_model_playground.dart';
 import '../utils/responsive_helper.dart';
+import '../utils/responsive_theme.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -115,17 +123,52 @@ class _DashboardPageState extends State<DashboardPage>
       return _buildInitialLoadingState(theme);
     }
 
-    return RefreshIndicator(
-      onRefresh: () async {
-        await Provider.of<DashboardService>(context, listen: false).refreshData();
+    return Consumer<DemoSessionService>(
+      builder: (context, demoService, child) {
+        return RefreshIndicator(
+          onRefresh: () async {
+            await Provider.of<DashboardService>(context, listen: false).refreshData();
+            demoService.incrementFeatureInteraction('dashboard_overview');
+          },
+          color: theme.colorScheme.primary,
+          backgroundColor: theme.colorScheme.surface,
+          child: SingleChildScrollView(
+            padding: ResponsiveHelper.getContentPadding(context),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Executive Dashboard Header
+                const ExecutiveDashboardHeader(),
+                
+                SizedBox(height: ResponsiveHelper.getAccessibleSpacing(context, 32)),
+                
+                // KPI Theater Section
+                _buildKPITheaterSection(context, demoService),
+                
+                SizedBox(height: ResponsiveHelper.getAccessibleSpacing(context, 32)),
+                
+                // AI Insight Engine
+                const AIInsightEngine(),
+                
+                SizedBox(height: ResponsiveHelper.getAccessibleSpacing(context, 32)),
+                
+                // Market Opportunity Visualizer
+                const MarketOpportunityVisualizer(),
+                
+                SizedBox(height: ResponsiveHelper.getAccessibleSpacing(context, 32)),
+                
+                // Revenue Model Playground
+                const RevenueModelPlayground(),
+                
+                SizedBox(height: ResponsiveHelper.getAccessibleSpacing(context, 32)),
+                
+                // Traditional Analytics Grid (Enhanced)
+                _buildAnalyticsSection(context, state),
+              ],
+            ),
+          ),
+        );
       },
-      color: theme.colorScheme.primary,
-      backgroundColor: theme.colorScheme.surface,
-      child: AnalyticsGrid(
-        metrics: state.metrics,
-        charts: state.charts,
-        isLoading: state.isLoading,
-      ),
     );
   }
 
@@ -196,20 +239,200 @@ class _DashboardPageState extends State<DashboardPage>
     );
   }
 
+  Widget _buildKPITheaterSection(BuildContext context, DemoSessionService demoService) {
+    final theme = Theme.of(context);
+    final metrics = demoService.getScenarioMetrics();
+    
+    if (metrics.isEmpty) return const SizedBox();
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(ResponsiveHelper.getResponsiveWidth(context, 12)),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    theme.colorScheme.primary,
+                    theme.colorScheme.secondary,
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(ResponsiveHelper.getResponsiveWidth(context, 12)),
+              ),
+              child: Icon(
+                Icons.theater_comedy,
+                color: Colors.white,
+                size: ResponsiveHelper.getIconSize(context, baseSize: 24),
+              ),
+            ),
+            SizedBox(width: ResponsiveHelper.getAccessibleSpacing(context, 16)),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'KPI Theater',
+                    style: ResponsiveTheme.responsiveTextStyle(
+                      context,
+                      baseFontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                  Text(
+                    'Real-time performance metrics with immersive visualizations',
+                    style: ResponsiveTheme.responsiveTextStyle(
+                      context,
+                      baseFontSize: 14,
+                      color: theme.colorScheme.onSurface.withOpacity(0.7),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        
+        SizedBox(height: ResponsiveHelper.getAccessibleSpacing(context, 24)),
+        
+        // KPI Cards Grid
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final isMobile = ResponsiveHelper.isMobile(context);
+            final crossAxisCount = isMobile ? 1 : (constraints.maxWidth > 1200 ? 4 : 2);
+            
+            return GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                childAspectRatio: isMobile ? 3.0 : 2.5,
+                crossAxisSpacing: ResponsiveHelper.getCardSpacing(context),
+                mainAxisSpacing: ResponsiveHelper.getCardSpacing(context),
+              ),
+              itemCount: metrics.take(8).length,
+              itemBuilder: (context, index) {
+                final metric = metrics[index];
+                return TweenAnimationBuilder<double>(
+                  duration: Duration(milliseconds: 400 + (index * 150)),
+                  tween: Tween(begin: 0.0, end: 1.0),
+                  curve: Curves.easeOutBack,
+                  builder: (context, value, child) {
+                    return Transform.scale(
+                      scale: value,
+                      child: KPITheaterCard(
+                        metric: metric,
+                        isLarge: index < 2, // First two cards are larger/featured
+                      ),
+                    );
+                  },
+                );
+              },
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAnalyticsSection(BuildContext context, DashboardState state) {
+    final theme = Theme.of(context);
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(ResponsiveHelper.getResponsiveWidth(context, 12)),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.tertiary.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(ResponsiveHelper.getResponsiveWidth(context, 12)),
+              ),
+              child: Icon(
+                Icons.analytics,
+                color: theme.colorScheme.tertiary,
+                size: ResponsiveHelper.getIconSize(context, baseSize: 24),
+              ),
+            ),
+            SizedBox(width: ResponsiveHelper.getAccessibleSpacing(context, 16)),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Advanced Analytics',
+                    style: ResponsiveTheme.responsiveTextStyle(
+                      context,
+                      baseFontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                  Text(
+                    'Interactive charts and deep-dive analysis tools',
+                    style: ResponsiveTheme.responsiveTextStyle(
+                      context,
+                      baseFontSize: 14,
+                      color: theme.colorScheme.onSurface.withOpacity(0.7),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        
+        SizedBox(height: ResponsiveHelper.getAccessibleSpacing(context, 24)),
+        
+        // Enhanced Analytics Grid
+        AnalyticsGrid(
+          metrics: state.metrics,
+          charts: state.charts,
+          isLoading: state.isLoading,
+        ),
+      ],
+    );
+  }
+
   void _handleSearch(String query) {
-    // Implement search functionality
+    final demoService = context.read<DemoSessionService>();
+    demoService.incrementFeatureInteraction('dashboard_overview');
+    
     if (query.isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Searching for: $query'),
+          content: Row(
+            children: [
+              const Icon(Icons.search, color: Colors.white),
+              SizedBox(width: ResponsiveHelper.getAccessibleSpacing(context, 8)),
+              Expanded(child: Text('AI-powered search: "$query" - 127 results found')),
+            ],
+          ),
           backgroundColor: Theme.of(context).colorScheme.primary,
           behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(16),
+          margin: EdgeInsets.all(ResponsiveHelper.getResponsiveWidth(context, 16)),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(ResponsiveHelper.getResponsiveWidth(context, 8)),
           ),
         ),
       );
+      
+      // Add search insight
+      final insight = DemoInsight(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: 'Search Pattern Detected',
+        description: 'Frequent searches for "$query" suggest this metric needs better visibility.',
+        impact: 'Consider adding "$query" to your main dashboard for quick access.',
+        discoveredAt: DateTime.now(),
+        source: 'Search Analytics',
+        confidence: 0.72,
+        type: InsightType.opportunity,
+      );
+      
+      demoService.addInsight(insight);
     }
   }
 }
