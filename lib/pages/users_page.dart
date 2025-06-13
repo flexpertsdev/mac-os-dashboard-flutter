@@ -3,6 +3,9 @@ import 'package:provider/provider.dart';
 import '../models/app_models.dart';
 import '../services/users_service.dart';
 import '../utils/responsive_helper.dart';
+import '../pages/user_creation_wizard.dart';
+import '../pages/user_profile_explorer.dart';
+import '../pages/user_impact_analysis.dart';
 
 
 class UsersPage extends StatefulWidget {
@@ -518,31 +521,57 @@ class _UsersPageState extends State<UsersPage> with TickerProviderStateMixin {
   }
 
   void _showAddUserDialog(BuildContext context, UsersService usersService) {
-    showDialog(
-      context: context,
-      builder: (context) => _UserFormDialog(
-        usersService: usersService,
-        isEditing: false,
+    // Navigate to immersive user creation wizard instead of modal
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const UserCreationWizard(),
+        fullscreenDialog: true,
       ),
     );
   }
 
   void _showUserDetails(BuildContext context, UserProfile user, UsersService usersService) {
-    showDialog(
-      context: context,
-      builder: (context) => _UserDetailsDialog(user: user, usersService: usersService),
+    // Navigate to immersive user profile explorer instead of modal
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => UserProfileExplorer(
+          userData: {
+            'id': user.id,
+            'name': user.name,
+            'email': user.email,
+            'role': user.role,
+            'department': user.department,
+            'avatar': user.avatar,
+            'isActive': user.isActive,
+            'lastLogin': user.lastLogin,
+            'permissions': ['View Dashboards', 'Edit Reports'], // Mock permissions
+          },
+        ),
+        fullscreenDialog: true,
+      ),
     );
   }
 
   void _handleUserAction(BuildContext context, String action, UserProfile user, UsersService usersService) {
     switch (action) {
       case 'edit':
-        showDialog(
-          context: context,
-          builder: (context) => _UserFormDialog(
-            usersService: usersService,
-            isEditing: true,
-            user: user,
+        // Navigate to user profile explorer in edit mode instead of modal
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => UserProfileExplorer(
+              userData: {
+                'id': user.id,
+                'name': user.name,
+                'email': user.email,
+                'role': user.role,
+                'department': user.department,
+                'avatar': user.avatar,
+                'isActive': user.isActive,
+                'lastLogin': user.lastLogin,
+                'permissions': ['View Dashboards', 'Edit Reports'], // Mock permissions
+              },
+            ),
+            fullscreenDialog: true,
           ),
         );
         break;
@@ -550,7 +579,13 @@ class _UsersPageState extends State<UsersPage> with TickerProviderStateMixin {
         usersService.toggleUserStatus(user.id);
         break;
       case 'delete':
-        _showDeleteConfirmation(context, user, usersService);
+        // Navigate to immersive impact analysis instead of simple confirmation
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => UserImpactAnalysis(user: user),
+            fullscreenDialog: true,
+          ),
+        );
         break;
     }
   }

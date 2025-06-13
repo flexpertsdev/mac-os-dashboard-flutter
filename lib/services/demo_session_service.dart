@@ -8,6 +8,7 @@ class DemoSessionService extends ChangeNotifier {
   static const String _sessionKey = 'demo_session';
   static const String _progressKey = 'demo_progress';
   static const String _insightsKey = 'demo_insights';
+  static const String _userDataKey = 'user_data';
   
   DemoSession? _currentSession;
   final Map<String, DemoFeature> _features = {};
@@ -244,6 +245,33 @@ class DemoSessionService extends ChangeNotifier {
         debugPrint('Error loading session: $e');
       }
     }
+  }
+  
+  // User data management for immersive experiences
+  Future<void> saveUserData(Map<String, dynamic> userData) async {
+    final prefs = await SharedPreferences.getInstance();
+    final userDataJson = jsonEncode(userData);
+    await prefs.setString(_userDataKey, userDataJson);
+    debugPrint('Saved user data: ${userData['name']}');
+  }
+  
+  Future<Map<String, dynamic>?> loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userDataJson = prefs.getString(_userDataKey);
+    
+    if (userDataJson != null) {
+      try {
+        return jsonDecode(userDataJson);
+      } catch (e) {
+        debugPrint('Error loading user data: $e');
+      }
+    }
+    return null;
+  }
+  
+  Future<void> clearUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_userDataKey);
   }
 
   Future<void> _saveProgress() async {
