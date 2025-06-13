@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:provider/provider.dart';
 import '../models/dashboard_data.dart';
-import '../models/app_models.dart';
 import '../services/dashboard_service.dart';
 import '../utils/responsive_helper.dart';
 
@@ -22,7 +21,7 @@ class _AnalyticsPageState extends State<AnalyticsPage>
   DateTime _endDate = DateTime.now();
   String _selectedMetric = 'Revenue';
   String _selectedPeriod = 'Daily';
-  bool _isLoading = false;
+  // bool _isLoading = false; // TODO: Implement loading state
 
   final List<String> _availableMetrics = [
     'Revenue', 'Users', 'Sessions', 'Conversion Rate', 'Bounce Rate'
@@ -810,31 +809,33 @@ class _AnalyticsPageState extends State<AnalyticsPage>
   }
 
   void _applyFilters() {
-    setState(() {
-      _isLoading = true;
-    });
+    // TODO: Implement actual filter logic
+    // setState(() {
+    //   _isLoading = true;
+    // });
 
     // Simulate data loading
     Future.delayed(const Duration(milliseconds: 800), () {
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
+        // setState(() {
+        //   _isLoading = false;
+        // });
       }
     });
   }
 
   Future<void> _refreshData() async {
-    setState(() {
-      _isLoading = true;
-    });
+    // TODO: Implement actual refresh logic
+    // setState(() {
+    //   _isLoading = true;
+    // });
 
     await Future.delayed(const Duration(seconds: 1));
     
     if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
+      // setState(() {
+      //   _isLoading = false;
+      // });
     }
   }
 

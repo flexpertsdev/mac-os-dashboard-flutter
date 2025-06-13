@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'dart:math' as math;
 import '../utils/responsive_helper.dart';
 import '../utils/responsive_theme.dart';
 import '../services/demo_session_service.dart';
@@ -40,12 +39,13 @@ class _CollaborationStudioImmersiveState extends State<CollaborationStudioImmers
   
   // Share options
   final List<String> _permissionLevels = ['view', 'comment', 'edit', 'admin'];
-  final List<ShareMethod> _shareMethods = [
-    ShareMethod('Email', Icons.email, const Color(0xFF3B82F6)),
-    ShareMethod('Slack', Icons.chat, const Color(0xFF4A154B)),
-    ShareMethod('Teams', Icons.groups, const Color(0xFF6264A7)),
-    ShareMethod('Link', Icons.link, const Color(0xFF10B981)),
-  ];
+  // TODO: Uncomment when share methods are implemented
+  // final List<ShareMethod> _shareMethods = [
+  //   ShareMethod('Email', Icons.email, const Color(0xFF3B82F6)),
+  //   ShareMethod('Slack', Icons.chat, const Color(0xFF4A154B)),
+  //   ShareMethod('Teams', Icons.groups, const Color(0xFF6264A7)),
+  //   ShareMethod('Link', Icons.link, const Color(0xFF10B981)),
+  // ];
   
   // Team members data
   final List<TeamMember> _teamMembers = [
