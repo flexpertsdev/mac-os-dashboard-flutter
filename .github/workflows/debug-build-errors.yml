@@ -102,7 +102,7 @@ jobs:
         echo '```' >> build-debug-report.md
         
     - name: Upload debug artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: build-debug-report-${{ github.run_number }}
         path: |

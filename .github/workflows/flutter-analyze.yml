@@ -63,7 +63,7 @@ jobs:
         echo '```' >> analysis-report.md
         
     - name: Upload analysis report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: flutter-analysis-report-${{ github.run_number }}
         path: analysis-report.md
