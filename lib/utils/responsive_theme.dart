@@ -27,25 +27,22 @@ class ResponsiveTheme {
     cardTheme: CardTheme(
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(ResponsiveHelper.getResponsiveWidth(context, 12)),
+        borderRadius: BorderRadius.circular(12), // Fixed size
       ),
       shadowColor: const Color(0xFF000000).withOpacity(0.08),
-      margin: ResponsiveHelper.getContentPadding(context),
+      margin: const EdgeInsets.all(8), // Fixed margin
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(ResponsiveHelper.getResponsiveWidth(context, 8)),
+          borderRadius: BorderRadius.circular(8),
         ),
-        padding: EdgeInsets.symmetric(
-          horizontal: ResponsiveHelper.getResponsiveWidth(context, 20),
-          vertical: ResponsiveHelper.getResponsiveHeight(context, 12),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 12,
         ),
-        minimumSize: Size(
-          ResponsiveHelper.ensureMinTouchTarget(ResponsiveHelper.getResponsiveWidth(context, 64)),
-          ResponsiveHelper.ensureMinTouchTarget(ResponsiveHelper.getResponsiveHeight(context, 36)),
-        ),
+        minimumSize: const Size(64, 36),
       ),
     ),
     iconButtonTheme: IconButtonThemeData(
@@ -106,16 +103,13 @@ class ResponsiveTheme {
       style: ElevatedButton.styleFrom(
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(ResponsiveHelper.getResponsiveWidth(context, 8)),
+          borderRadius: BorderRadius.circular(8),
         ),
-        padding: EdgeInsets.symmetric(
-          horizontal: ResponsiveHelper.getResponsiveWidth(context, 20),
-          vertical: ResponsiveHelper.getResponsiveHeight(context, 12),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 12,
         ),
-        minimumSize: Size(
-          ResponsiveHelper.ensureMinTouchTarget(ResponsiveHelper.getResponsiveWidth(context, 64)),
-          ResponsiveHelper.ensureMinTouchTarget(ResponsiveHelper.getResponsiveHeight(context, 36)),
-        ),
+        minimumSize: const Size(64, 36),
       ),
     ),
     iconButtonTheme: IconButtonThemeData(

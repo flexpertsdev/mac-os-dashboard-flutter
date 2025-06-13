@@ -56,9 +56,13 @@ class ResponsiveHelper {
 
   // Fluid padding based on screen size
   static EdgeInsets getContentPadding(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    final paddingValue = math.max(16.0, width * 0.02); // Min 16px, max 2% of width
-    return EdgeInsets.all(math.min(32.0, paddingValue)); // Cap at 32px
+    // Simple fixed padding that works
+    if (isMobile(context)) {
+      return const EdgeInsets.all(12.0);
+    } else if (isTablet(context)) {
+      return const EdgeInsets.all(16.0);
+    }
+    return const EdgeInsets.all(20.0);
   }
 
   // Dynamic spacing that scales with screen size
@@ -82,17 +86,15 @@ class ResponsiveHelper {
     final textScaler = mediaQuery.textScaler;
     final textScaleFactor = textScaler.scale(1.0);
     
-    // Scale factor based on screen width (0.85 to 1.3)
-    double screenScale;
-    if (width < mobileBreakpoint) {
-      screenScale = 0.85 + (width / mobileBreakpoint) * 0.25; // 0.85 to 1.1
-    } else if (width < tabletBreakpoint) {
-      screenScale = 1.1 + ((width - mobileBreakpoint) / (tabletBreakpoint - mobileBreakpoint)) * 0.1; // 1.1 to 1.2
-    } else {
-      screenScale = 1.2 + ((width - tabletBreakpoint) / (ultraWideBreakpoint - tabletBreakpoint)) * 0.1; // 1.2 to 1.3
+    // Much more conservative scaling - only scale down on mobile
+    double screenScale = 1.0;
+    if (width < 400) {
+      screenScale = 0.9; // 10% smaller on very small screens
+    } else if (width < mobileBreakpoint) {
+      screenScale = 0.95; // 5% smaller on mobile
     }
     
-    // Apply both screen scaling and accessibility text scaling
+    // Apply only accessibility text scaling (user preference)
     return baseFontSize * screenScale * textScaleFactor;
   }
 
@@ -121,16 +123,22 @@ class ResponsiveHelper {
 
   // Get responsive height that scales with screen size
   static double getResponsiveHeight(BuildContext context, double baseHeight) {
+    // Much more conservative - just return base height for most cases
     final height = MediaQuery.of(context).size.height;
-    final scale = math.max(0.7, math.min(1.3, height / 800)); // Scale between 70% and 130%
-    return baseHeight * scale;
+    if (height < 600) {
+      return baseHeight * 0.85; // Only scale down on very small screens
+    }
+    return baseHeight; // Use original size
   }
 
   // Get responsive width that scales with screen size
   static double getResponsiveWidth(BuildContext context, double baseWidth) {
+    // Much more conservative - just return base width for most cases
     final width = MediaQuery.of(context).size.width;
-    final scale = math.max(0.8, math.min(1.2, width / 1200)); // Scale between 80% and 120%
-    return baseWidth * scale;
+    if (width < 400) {
+      return baseWidth * 0.85; // Only scale down on very small screens
+    }
+    return baseWidth; // Use original size
   }
 
   // Ensure minimum touch target size
@@ -140,8 +148,8 @@ class ResponsiveHelper {
 
   // Get safe icon size that meets touch target requirements
   static double getIconSize(BuildContext context, {double baseSize = 24.0}) {
-    final responsiveSize = getResponsiveWidth(context, baseSize);
-    return ensureMinTouchTarget(responsiveSize);
+    // Just return the base size - icons should not be scaled to touch target size!
+    return baseSize;
   }
 
   // CONTAINER AND LAYOUT HELPERS
