@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/dashboard_data.dart';
 import '../utils/responsive_helper.dart';
 import '../utils/responsive_theme.dart';
+import '../pages/analytics_explorer_immersive.dart';
 
 class MetricCard extends StatefulWidget {
   final MetricCardData data;
@@ -258,151 +259,21 @@ class _MetricCardState extends State<MetricCard>
   }
 
   void _showDetails(BuildContext context) {
-    final theme = Theme.of(context);
+    HapticFeedback.mediumImpact();
     
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Row(
-          children: [
-            Container(
-              padding: EdgeInsets.all(ResponsiveHelper.getResponsiveWidth(context, 8)),
-              decoration: BoxDecoration(
-                color: widget.data.color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(ResponsiveHelper.getResponsiveWidth(context, 8)),
-              ),
-              child: Icon(
-                widget.data.icon,
-                color: widget.data.color,
-                size: ResponsiveHelper.getIconSize(context, baseSize: 20),
-              ),
-            ),
-            SizedBox(width: ResponsiveHelper.getAccessibleSpacing(context, 12)),
-            Flexible(
-              child: Text(
-                widget.data.title,
-                style: ResponsiveTheme.responsiveTextStyle(
-                  context,
-                  baseFontSize: 20,
-                  color: theme.colorScheme.onSurface,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (context) => AnalyticsExplorerImmersive(
+          data: widget.data,
+          analyticsType: 'metric',
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Current Value',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.6),
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              widget.data.value,
-              style: theme.textTheme.headlineMedium?.copyWith(
-                color: theme.colorScheme.onSurface,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Trend',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.6),
-              ),
-            ),
-            const SizedBox(height: 4),
-            _buildTrend(context, theme),
-            const SizedBox(height: 16),
-            Text(
-              'Period',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.6),
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              widget.data.subtitle,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(
-              'Close',
-              style: TextStyle(color: theme.colorScheme.primary),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Viewing detailed ${widget.data.title} analytics'),
-                  backgroundColor: theme.colorScheme.primary,
-                  behavior: SnackBarBehavior.floating,
-                  margin: const EdgeInsets.all(16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              );
-            },
-            child: Text(
-              'View Details',
-              style: TextStyle(color: theme.colorScheme.onPrimary),
-            ),
-          ),
-        ],
       ),
     );
   }
 
   void _showMoreOptions(BuildContext context) {
-    // Show options menu for metric
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Container(
-        padding: ResponsiveHelper.getContentPadding(context),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.analytics),
-              title: const Text('View Analytics'),
-              onTap: () {
-                Navigator.of(context).pop();
-                _showDetails(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.share),
-              title: const Text('Share Metric'),
-              onTap: () {
-                Navigator.of(context).pop();
-                // Implement share functionality
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.notifications),
-              title: const Text('Set Alert'),
-              onTap: () {
-                Navigator.of(context).pop();
-                // Implement alert functionality
-              },
-            ),
-          ],
-        ),
-      ),
-    );
+    HapticFeedback.lightImpact();
+    _showDetails(context);
   }
 }

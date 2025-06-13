@@ -261,7 +261,6 @@ class ResponsiveTheme {
       fontWeight: fontWeight ?? FontWeight.normal,
       color: color,
       height: height ?? 1.4,
-      overflow: enableOverflowProtection ? TextOverflow.ellipsis : null,
     );
   }
 

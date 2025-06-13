@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../models/dashboard_data.dart';
 import '../utils/responsive_helper.dart';
 import '../utils/responsive_theme.dart';
+import '../pages/analytics_explorer_immersive.dart';
 
 class ChartCard extends StatefulWidget {
   final ChartCardData data;
@@ -418,111 +420,21 @@ class _ChartCardState extends State<ChartCard>
   }
 
   void _showFullChart(BuildContext context) {
-    final theme = Theme.of(context);
-    final screenSize = MediaQuery.of(context).size;
+    HapticFeedback.mediumImpact();
     
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        child: Container(
-          width: ResponsiveHelper.getResponsiveWidth(context, 600),
-          height: ResponsiveHelper.getResponsiveHeight(context, 500),
-          constraints: BoxConstraints(
-            maxWidth: screenSize.width * 0.9,
-            maxHeight: screenSize.height * 0.8,
-          ),
-          padding: ResponsiveHelper.getContentPadding(context),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.data.title,
-                          style: ResponsiveTheme.responsiveTextStyle(
-                            context,
-                            baseFontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: theme.colorScheme.onSurface,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
-                        ),
-                        SizedBox(height: ResponsiveHelper.getAccessibleSpacing(context, 4)),
-                        Text(
-                          widget.data.subtitle,
-                          style: ResponsiveTheme.responsiveTextStyle(
-                            context,
-                            baseFontSize: 14,
-                            color: theme.colorScheme.onSurface.withOpacity(0.6),
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
-                      ],
-                    ),
-                  ),
-                  ResponsiveTheme.responsiveIconButton(
-                    context: context,
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: Icons.close,
-                    color: theme.colorScheme.onSurface.withOpacity(0.7),
-                    tooltip: 'Close',
-                  ),
-                ],
-              ),
-              SizedBox(height: ResponsiveHelper.getAccessibleSpacing(context, 24)),
-              Expanded(
-                child: RepaintBoundary(
-                  child: _buildChart(context, theme),
-                ),
-              ),
-            ],
-          ),
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (context) => AnalyticsExplorerImmersive(
+          data: widget.data,
+          analyticsType: 'chart',
         ),
       ),
     );
   }
 
   void _showMoreOptions(BuildContext context) {
-    // Show options menu for chart
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Container(
-        padding: ResponsiveHelper.getContentPadding(context),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.fullscreen),
-              title: const Text('View Full Chart'),
-              onTap: () {
-                Navigator.of(context).pop();
-                _showFullChart(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.download),
-              title: const Text('Export Chart'),
-              onTap: () {
-                Navigator.of(context).pop();
-                // Implement export functionality
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Chart Settings'),
-              onTap: () {
-                Navigator.of(context).pop();
-                // Implement settings
-              },
-            ),
-          ],
-        ),
-      ),
-    );
+    HapticFeedback.lightImpact();
+    _showFullChart(context);
   }
 }
