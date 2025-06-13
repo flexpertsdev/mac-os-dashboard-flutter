@@ -1,0 +1,70 @@
+name: Flutter Code Analysis
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.0'
+        channel: 'stable'
+        
+    - name: Flutter Doctor
+      run: flutter doctor -v
+      
+    - name: Get dependencies
+      run: flutter pub get
+      
+    - name: Verify dependencies
+      run: flutter pub deps
+      
+    - name: Check formatting
+      run: dart format --output=none --set-exit-if-changed .
+      continue-on-error: true
+      
+    - name: Analyze project source
+      run: flutter analyze --fatal-infos
+      
+    - name: Check for unused dependencies
+      run: flutter pub deps --no-dev
+      
+    - name: Dart analysis summary
+      run: |
+        echo "=== DART ANALYSIS SUMMARY ==="
+        echo "✅ Dependencies: $(flutter pub deps --no-dev | grep -c 'dependencies:')"
+        echo "✅ Direct dependencies: $(cat pubspec.yaml | grep -A 20 'dependencies:' | grep -c '^  [a-zA-Z]')"
+        echo "✅ Dev dependencies: $(cat pubspec.yaml | grep -A 20 'dev_dependencies:' | grep -c '^  [a-zA-Z]')"
+        
+    - name: Generate analysis report
+      run: |
+        echo "# Flutter Analysis Report" > analysis-report.md
+        echo "Generated: $(date)" >> analysis-report.md
+        echo "" >> analysis-report.md
+        echo "## Flutter Doctor" >> analysis-report.md
+        echo '```' >> analysis-report.md
+        flutter doctor >> analysis-report.md
+        echo '```' >> analysis-report.md
+        echo "" >> analysis-report.md
+        echo "## Dependencies" >> analysis-report.md
+        echo '```' >> analysis-report.md
+        flutter pub deps --no-dev >> analysis-report.md
+        echo '```' >> analysis-report.md
+        
+    - name: Upload analysis report
+      uses: actions/upload-artifact@v3
+      with:
+        name: flutter-analysis-report-${{ github.run_number }}
+        path: analysis-report.md
+        retention-days: 30

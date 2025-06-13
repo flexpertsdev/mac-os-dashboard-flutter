@@ -1,0 +1,111 @@
+name: Debug Build Errors
+
+on:
+  workflow_dispatch:
+    inputs:
+      verbose_output:
+        description: 'Enable verbose output'
+        required: false
+        default: true
+        type: boolean
+      check_imports:
+        description: 'Check import issues specifically'
+        required: false
+        default: true
+        type: boolean
+
+jobs:
+  debug-build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.0'
+        channel: 'stable'
+        
+    - name: Flutter Doctor Verbose
+      run: flutter doctor -v
+      
+    - name: Clean and get dependencies
+      run: |
+        flutter clean
+        flutter pub get
+        
+    - name: Check specific import issues
+      if: ${{ github.event.inputs.check_imports == 'true' }}
+      run: |
+        echo "=== CHECKING IMPORT ISSUES ==="
+        echo "Checking demo_session_service.dart imports:"
+        head -10 lib/services/demo_session_service.dart
+        echo ""
+        echo "Checking for Color/Icons usage in demo_session_service.dart:"
+        grep -n "Color\|Icons" lib/services/demo_session_service.dart || echo "No Color/Icons found"
+        echo ""
+        echo "Checking responsive_theme.dart for overflow issues:"
+        grep -n "overflow\|enableOverflowProtection" lib/utils/responsive_theme.dart || echo "No overflow issues found"
+        
+    - name: Attempt build with detailed errors
+      run: |
+        echo "=== ATTEMPTING BUILD WITH DETAILED OUTPUT ==="
+        flutter build web --verbose 2>&1 | tee build-output.log || true
+        
+    - name: Check for specific error patterns
+      run: |
+        echo "=== ANALYZING BUILD ERRORS ==="
+        if [ -f build-output.log ]; then
+          echo "Build errors found:"
+          grep -A 5 -B 5 "Error:" build-output.log || echo "No specific errors found in pattern"
+          echo ""
+          echo "Checking for import issues:"
+          grep -A 2 -B 2 "Couldn't find constructor\|isn't defined" build-output.log || echo "No import issues found"
+          echo ""
+          echo "Checking for overflow parameter issues:"
+          grep -A 2 -B 2 "No named parameter.*overflow" build-output.log || echo "No overflow parameter issues found"
+        else
+          echo "No build log file found"
+        fi
+        
+    - name: List all Dart files with potential issues
+      run: |
+        echo "=== FILES WITH POTENTIAL ISSUES ==="
+        echo "Files using Icons:"
+        find lib -name "*.dart" -exec grep -l "Icons\." {} \; || echo "No files using Icons found"
+        echo ""
+        echo "Files using Color:"
+        find lib -name "*.dart" -exec grep -l "Color(" {} \; || echo "No files using Color found"
+        echo ""
+        echo "Files with Material imports:"
+        find lib -name "*.dart" -exec grep -l "flutter/material" {} \; || echo "No Material imports found"
+        
+    - name: Generate detailed error report
+      run: |
+        echo "# Build Error Debug Report" > build-debug-report.md
+        echo "Generated: $(date)" >> build-debug-report.md
+        echo "" >> build-debug-report.md
+        echo "## Flutter Version" >> build-debug-report.md
+        echo '```' >> build-debug-report.md
+        flutter --version >> build-debug-report.md
+        echo '```' >> build-debug-report.md
+        echo "" >> build-debug-report.md
+        echo "## Build Output" >> build-debug-report.md
+        echo '```' >> build-debug-report.md
+        if [ -f build-output.log ]; then
+          cat build-output.log >> build-debug-report.md
+        else
+          echo "No build output captured" >> build-debug-report.md
+        fi
+        echo '```' >> build-debug-report.md
+        
+    - name: Upload debug artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-debug-report-${{ github.run_number }}
+        path: |
+          build-debug-report.md
+          build-output.log
+        retention-days: 7

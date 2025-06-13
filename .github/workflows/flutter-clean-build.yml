@@ -1,0 +1,68 @@
+name: Flutter Clean & Build Test
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build type to test'
+        required: true
+        default: 'web'
+        type: choice
+        options:
+        - web
+        - android
+        - ios
+        - all
+
+jobs:
+  clean-and-build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.0'
+        channel: 'stable'
+        
+    - name: Flutter Doctor
+      run: flutter doctor -v
+      
+    - name: Clean Flutter
+      run: flutter clean
+      
+    - name: Get dependencies
+      run: flutter pub get
+      
+    - name: Analyze code
+      run: flutter analyze
+      
+    - name: Build Web (if selected)
+      if: ${{ github.event.inputs.build_type == 'web' || github.event.inputs.build_type == 'all' }}
+      run: flutter build web --release
+      
+    - name: Build Android APK (if selected)
+      if: ${{ github.event.inputs.build_type == 'android' || github.event.inputs.build_type == 'all' }}
+      run: flutter build apk --release
+      
+    - name: Build iOS (if selected and on macOS)
+      if: ${{ github.event.inputs.build_type == 'ios' || github.event.inputs.build_type == 'all' }}
+      run: |
+        if [[ "$RUNNER_OS" == "macOS" ]]; then
+          flutter build ios --release --no-codesign
+        else
+          echo "iOS build skipped - requires macOS runner"
+        fi
+        
+    - name: Upload build artifacts
+      if: success()
+      uses: actions/upload-artifact@v3
+      with:
+        name: flutter-build-${{ github.event.inputs.build_type }}-${{ github.run_number }}
+        path: |
+          build/web/
+          build/app/outputs/flutter-apk/
+        retention-days: 5

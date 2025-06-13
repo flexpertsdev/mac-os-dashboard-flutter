@@ -254,7 +254,6 @@ class ResponsiveTheme {
     FontWeight? fontWeight,
     Color? color,
     double? height,
-    bool enableOverflowProtection = true,
   }) {
     return GoogleFonts.inter(
       fontSize: ResponsiveHelper.getResponsiveFontSize(context, baseFontSize),
