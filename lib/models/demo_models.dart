@@ -197,7 +197,11 @@ enum InsightType {
   risk('Risk', Icons.warning, Color(0xFFFF9500)),
   anomaly('Anomaly', Icons.error, Color(0xFFFF3B30)),
   trend('Trend', Icons.trending_up, Color(0xFF007AFF)),
-  correlation('Correlation', Icons.hub, Color(0xFFAF52DE));
+  correlation('Correlation', Icons.hub, Color(0xFFAF52DE)),
+  discovery('Discovery', Icons.search, Color(0xFF5856D6)),
+  collaboration('Collaboration', Icons.group, Color(0xFFAF52DE)),
+  optimization('Optimization', Icons.tune, Color(0xFF007AFF)),
+  achievement('Achievement', Icons.star, Color(0xFFFF9500));
 
   const InsightType(this.label, this.icon, this.color);
   

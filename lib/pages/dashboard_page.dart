@@ -8,7 +8,6 @@ import '../widgets/sidebar_navigation.dart';
 import '../widgets/top_navigation.dart';
 import '../widgets/analytics_grid.dart';
 import '../widgets/executive_dashboard_header.dart';
-import '../widgets/kpi_theater_card.dart';
 import '../widgets/ai_insight_engine.dart';
 import '../widgets/market_opportunity_visualizer.dart';
 import '../widgets/revenue_model_playground.dart';
@@ -322,9 +321,18 @@ class _DashboardPageState extends State<DashboardPage>
                   builder: (context, value, child) {
                     return Transform.scale(
                       scale: value,
-                      child: KPITheaterCard(
-                        metric: metric,
-                        isLarge: index < 2, // First two cards are larger/featured
+                      child: Card(
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(metric.name, style: Theme.of(context).textTheme.titleMedium),
+                              Text('${metric.value}', style: Theme.of(context).textTheme.headlineMedium),
+                              Text(metric.category, style: Theme.of(context).textTheme.bodySmall),
+                            ],
+                          ),
+                        ),
                       ),
                     );
                   },

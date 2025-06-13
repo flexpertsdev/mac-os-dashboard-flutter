@@ -18,6 +18,10 @@ class MetricCardData {
     required this.icon,
     required this.color,
   });
+
+  // Getters for backward compatibility
+  double get change => trendPercentage;
+  bool get isPositive => isPositiveTrend;
 }
 
 class ChartDataPoint {
@@ -46,6 +50,9 @@ class ChartCardData {
     required this.type,
     required this.primaryColor,
   });
+
+  // Getter for backward compatibility
+  ChartType get chartType => type;
 }
 
 enum ChartType {

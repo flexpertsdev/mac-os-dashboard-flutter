@@ -684,7 +684,7 @@ class _ReportViewerImmersiveState extends State<ReportViewerImmersive>
       VisualizationData(
         'Conversion Rate',
         'Lead to customer conversion',
-        Icons.conversion,
+        Icons.trending_up,
         const Color(0xFFEF4444),
         '12.4%',
         '+1.2%',
@@ -1798,7 +1798,7 @@ class _ReportViewerImmersiveState extends State<ReportViewerImmersive>
       ),
     );
     
-    return const SizedBox(); // This won't be shown anymore
+    return const SizedBox.shrink(); // Return empty widget
   }
   
   Widget _buildShareDialogOld() {

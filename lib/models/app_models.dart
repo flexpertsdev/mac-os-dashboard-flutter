@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 
 class UserProfile {
   final String id;
@@ -22,6 +21,9 @@ class UserProfile {
     this.isActive = true,
     required this.lastLogin,
   });
+
+  // Getter for backward compatibility
+  String get avatar => avatarUrl;
 
   Map<String, dynamic> toJson() => {
     'id': id,
