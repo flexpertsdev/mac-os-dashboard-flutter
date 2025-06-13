@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../models/dashboard_data.dart';
+import '../models/demo_models.dart';
 import '../utils/responsive_helper.dart';
 import '../utils/responsive_theme.dart';
 import '../pages/analytics_explorer_immersive.dart';
@@ -265,8 +267,12 @@ class _MetricCardState extends State<MetricCard>
       MaterialPageRoute(
         fullscreenDialog: true,
         builder: (context) => AnalyticsExplorerImmersive(
-          data: widget.data,
-          analyticsType: 'metric',
+          metricData: {
+            'title': widget.data.title,
+            'value': widget.data.value,
+            'change': widget.data.change,
+            'isPositive': widget.data.isPositive,
+          },
         ),
       ),
     );

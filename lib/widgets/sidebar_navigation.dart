@@ -62,7 +62,7 @@ class _SidebarNavigationState extends State<SidebarNavigation>
       animation: _animation,
       builder: (context, child) {
         final width = widget.isCollapsed
-            ? ResponsiveHelper.getCollapsedSidebarWidth()
+            ? ResponsiveHelper.getCollapsedSidebarWidth(context)
             : ResponsiveHelper.getSidebarWidth(context);
 
         return Container(

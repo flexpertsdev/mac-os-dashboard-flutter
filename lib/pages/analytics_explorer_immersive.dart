@@ -8,11 +8,15 @@ import '../services/demo_session_service.dart';
 import '../models/demo_models.dart';
 
 class AnalyticsExplorerImmersive extends StatefulWidget {
-  final Map<String, dynamic> metricData;
+  final Map<String, dynamic>? metricData;
+  final ScenarioMetric? initialMetric;
+  final String? heroTag;
   
   const AnalyticsExplorerImmersive({
     super.key,
-    required this.metricData,
+    this.metricData,
+    this.initialMetric,
+    this.heroTag,
   });
 
   @override

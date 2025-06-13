@@ -426,8 +426,11 @@ class _ChartCardState extends State<ChartCard>
       MaterialPageRoute(
         fullscreenDialog: true,
         builder: (context) => AnalyticsExplorerImmersive(
-          data: widget.data,
-          analyticsType: 'chart',
+          metricData: {
+            'title': widget.data.title,
+            'chartType': widget.data.chartType,
+            'data': widget.data.data,
+          },
         ),
       ),
     );

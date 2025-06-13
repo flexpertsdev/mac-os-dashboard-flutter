@@ -79,7 +79,8 @@ class ResponsiveHelper {
   static double getResponsiveFontSize(BuildContext context, double baseFontSize) {
     final mediaQuery = MediaQuery.of(context);
     final width = mediaQuery.size.width;
-    final textScaleFactor = mediaQuery.textScaleFactor;
+    final textScaler = mediaQuery.textScaler;
+    final textScaleFactor = textScaler.scale(1.0);
     
     // Scale factor based on screen width (0.85 to 1.3)
     double screenScale;
@@ -181,12 +182,14 @@ class ResponsiveHelper {
 
   // Check if user has accessibility large text enabled
   static bool isLargeTextEnabled(BuildContext context) {
-    return MediaQuery.of(context).textScaleFactor > 1.3;
+    final textScaler = MediaQuery.of(context).textScaler;
+    return textScaler.scale(1.0) > 1.3;
   }
 
   // Get accessible spacing that accounts for large text
   static double getAccessibleSpacing(BuildContext context, double baseSpacing) {
-    final textScale = MediaQuery.of(context).textScaleFactor;
+    final textScaler = MediaQuery.of(context).textScaler;
+    final textScale = textScaler.scale(1.0);
     return baseSpacing * math.max(1.0, textScale * 0.8);
   }
 }
